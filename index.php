@@ -102,9 +102,15 @@
 
         <!-- Resultado -->
         <?php
+        require_once 'logger.php';
+        $logger = new Logger();
+
         if ($_POST) {
             $target = $_POST['target'] ?? '';
             $ports = $_POST['ports'] ?? '';
+
+            // Registra a tentativa de acesso antes de processar
+            $logger->logAccess($target, $ports);
 
             if (!$target || !$ports) {
                 echo '<div class="card p-6 rounded-xl w-full max-w-2xl text-center mb-8 animate-fadeIn">';
@@ -141,6 +147,9 @@
                             $status = isPortOpen($ip, $port) ? 'aberta' : 'fechada';
                             $results[] = ['port' => $port, 'status' => $status];
                         }
+
+                        // Registra o resultado completo
+                        $logger->logAccess($target, $ports, $results);
 
                         echo '<div class="card p-8 rounded-2xl w-full max-w-4xl mb-10 animate-fadeIn">';
                         echo '<h2 class="text-2xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-[#0EE57F] to-[#0BA861]">';
